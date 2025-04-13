@@ -13,5 +13,4 @@ public enum VehicleType {
     public String getType() {
         return type;
     }
-g
 }
