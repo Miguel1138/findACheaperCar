@@ -1,20 +1,27 @@
 package br.com.miguelsantos.findACheaperCar.handlers;
 
-public class VehicleInputHandler {
-    public int checkIntInRange(String input) {
-        try {
-            int num = Integer.parseInt(input);
-            if (num < 1 || num > 3) {
-                System.out.println("Opção inválida! Digite 1, 2 ou 3:\n");
-                sleepRetry();
-                return -1;
-            }
-            return num;
-        } catch (NumberFormatException e) {
-            System.out.println("Comando inválido! Digite novamente: \n");
+public class VehicleInputHandler  {
+
+    public int checkValidOption(String input) {
+        int num = checkOption(input.toLowerCase());
+        if (num == -1) {
+            System.out.println("Opção inválida! Digite Novamente:\n");
             sleepRetry();
-            return -1;
+            return num;
         }
+
+        return num;
+    }
+
+    private int checkOption(String input) {
+        if (input.contains("carr")) {
+            return 1;
+        } else if (input.contains("mot")) {
+            return 2;
+        } else if (input.contains("cam")) {
+            return 3;
+        }
+        return -1;
     }
 
     // Adiciona delay para apresentar novamente a tela.
