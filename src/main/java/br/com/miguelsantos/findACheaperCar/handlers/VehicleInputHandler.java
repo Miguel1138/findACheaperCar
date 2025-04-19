@@ -1,24 +1,23 @@
 package br.com.miguelsantos.findACheaperCar.handlers;
 
-public class VehicleInputHandler  {
+public class VehicleInputHandler {
 
-    public int checkValidOption(String input) {
-        int num = checkOption(input.toLowerCase());
-        if (num == -1) {
+    public int checkValidOption(String vehicle) {
+        int vehicleTypeIndex = checkType(vehicle.toLowerCase());
+        if (vehicleTypeIndex == -1) {
             System.out.println("Opção inválida! Digite Novamente:\n");
             sleepRetry();
-            return num;
+            return vehicleTypeIndex;
         }
-
-        return num;
+        return vehicleTypeIndex;
     }
 
-    private int checkOption(String input) {
-        if (input.contains("carr")) {
+    private int checkType(String vehicle) {
+        if (vehicle.contains("car")) {
             return 1;
-        } else if (input.contains("mot")) {
+        } else if (vehicle.contains("mot")) {
             return 2;
-        } else if (input.contains("cam")) {
+        } else if (vehicle.contains("cam")) {
             return 3;
         }
         return -1;

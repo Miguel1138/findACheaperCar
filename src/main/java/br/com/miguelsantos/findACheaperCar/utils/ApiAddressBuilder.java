@@ -9,12 +9,11 @@ public class ApiAddressBuilder {
     private final String YEARS = "/anos";
     private String address;
 
-
     public String getBrandsNamesByVehicle(int type) {
         address = switch (type) {
-            case 1 -> BASE_URL + CAR.getType() + BRAND;
-            case 2 -> BASE_URL + MOTORCYCLE.getType() + BRAND;
-            case 3 -> BASE_URL + TRUCK.getType() + BRAND;
+            case 1 -> BASE_URL + CAR + BRAND;
+            case 2 -> BASE_URL + MOTORCYCLE + BRAND;
+            case 3 -> BASE_URL + TRUCK + BRAND;
             default -> throw new IllegalStateException("Valor Inválido: " + type);
         };
 

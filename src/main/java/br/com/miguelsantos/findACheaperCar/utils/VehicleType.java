@@ -1,16 +1,7 @@
 package br.com.miguelsantos.findACheaperCar.utils;
 
-public enum VehicleType {
-    CAR("carros"),
-    MOTORCYCLE("motos"),
-    TRUCK("caminhoes");
-
-    private String type;
-    VehicleType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
+public final class VehicleType {
+    public static final String CAR = "carros";
+    public static final String MOTORCYCLE = "motos";
+    public static final String TRUCK = "caminhoes";
 }
