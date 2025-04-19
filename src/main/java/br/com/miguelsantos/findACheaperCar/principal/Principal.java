@@ -1,21 +1,21 @@
 package br.com.miguelsantos.findACheaperCar.principal;
 
+import br.com.miguelsantos.findACheaperCar.controller.ConvertDataController;
+import br.com.miguelsantos.findACheaperCar.controller.VehicleController;
 import br.com.miguelsantos.findACheaperCar.handlers.VehicleInputHandler;
 import br.com.miguelsantos.findACheaperCar.model.VehicleBrandData;
 import br.com.miguelsantos.findACheaperCar.model.VehicleModelData;
-import br.com.miguelsantos.findACheaperCar.service.ApiConsumer;
-import br.com.miguelsantos.findACheaperCar.service.ConvertData;
-import br.com.miguelsantos.findACheaperCar.utils.ApiAddressBuilder;
+import br.com.miguelsantos.findACheaperCar.utils.ErrorMessages;
 
 import java.util.Comparator;
 import java.util.Scanner;
 
 public class Principal {
-    private final ApiAddressBuilder addressBuilder = new ApiAddressBuilder();
     private final Scanner scanner = new Scanner(System.in);
-    private final ConvertData convertData = new ConvertData();
-    private final ApiConsumer apiConsumer = new ApiConsumer();
+    private final VehicleController vehicleController = new VehicleController();
+    private final ConvertDataController convertDataController = new ConvertDataController();
     private int type;
+    private int threshold = 0;
 
     public void showMenu() {
         showOpenDialog();
@@ -26,27 +26,47 @@ public class Principal {
 
     // TODO: mostrar lista de anos para esoclha.
     // TODO: mostrar valor do veículo no ano solicitado.
-
-
     private void showVehiclesByYearDialog() {
         System.out.println("Insira o Id do veículo que deseja: ");
         int id = Integer.parseInt(scanner.nextLine());
-        System.out.println(getVehicleYearAddress(id));
+        System.out.println(vehicleController.getVehicleYearAddress(id));
     }
 
     private void showModelListDialog() {
         System.out.println("Informe o código da marca desejada para consulta");
-        int id = Integer.parseInt(scanner.nextLine());
-        String json = getVehicleModelAddress(id);
-        VehicleModelData modelData = convertData.convertDataFrom(json, VehicleModelData.class);
-        modelData.models().stream()
-                .sorted(Comparator.comparing(VehicleBrandData::id))
-                .forEach(System.out::println);
+        // O(n^2)
+        do {
+            try {
+                int id = Integer.parseInt(scanner.nextLine());
+                String json = vehicleController.getVehicleModelAddress(id);
+                while (json.contains(ErrorMessages.DEFAULT_MESSAGE)) {
+                    System.out.println("Erro ao obter os modelos de veículos. Por favor, tente novamente.");
+                    id = Integer.parseInt(scanner.nextLine());
+                    json = vehicleController.getVehicleModelAddress(id);
+                }
+
+                VehicleModelData modelData = convertDataController.convertDataFrom(json);
+                modelData.models().stream()
+                        .sorted(Comparator.comparing(VehicleBrandData::id))
+                        .forEach(System.out::println);
+                break;
+
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida. Por favor, insira um número válido.");
+                threshold++;
+            }
+        } while (threshold < 3);
+
+        if (threshold == 3) {
+            System.out.println(ErrorMessages.TOO_MANY_TRIES);
+            System.exit(0);
+        } else threshold = 0;
+
     }
 
     private void showBrandlistDialog() {
-        String json = getVehicleBrandAddress(type);
-        var brands = convertData.convertListFrom(json, VehicleBrandData.class);
+        String json = vehicleController.getVehicleBrandAddress(type);
+        var brands = convertDataController.convertListFrom(json);
         brands.stream()
                 .sorted(Comparator.comparing(VehicleBrandData::id))
                 .forEach(System.out::println);
@@ -54,6 +74,7 @@ public class Principal {
 
     private void showOpenDialog() {
         VehicleInputHandler handler = new VehicleInputHandler();
+
         System.out.println("*************************************\n" +
                 "BEM VINDO A FIND A CHEaPER VEHICLE! \n" +
                 "*************************************\n" +
@@ -61,22 +82,16 @@ public class Principal {
                 "- Carros\n- Motos\n- Caminhoes");
         do {
             type = handler.checkValidOption(scanner.nextLine());
+            threshold++;
+            if (threshold == 3) {
+                System.out.println(ErrorMessages.TOO_MANY_TRIES);
+                System.exit(0);
+            }
         } while (type == -1);
+        threshold = 0;
     }
 
     //TODO : Pegar o valor do Json e montar na classe Vehicle e lista de veículos para amostragem.
     // Apresentar a lista de veículos para o usuário escolher qual véiculo quer ter mais detalhes.
-
-    public String getVehicleBrandAddress(int type) {
-        return apiConsumer.obtainData(addressBuilder.getBrandsNamesByVehicle(type));
-    }
-
-    public String getVehicleModelAddress(int id) {
-        return apiConsumer.obtainData(addressBuilder.getModelsNamesByVehicle(id));
-    }
-
-    public String getVehicleYearAddress(int id) {
-        return apiConsumer.obtainData(addressBuilder.getVehicleDateBy(id));
-    }
 
 }
