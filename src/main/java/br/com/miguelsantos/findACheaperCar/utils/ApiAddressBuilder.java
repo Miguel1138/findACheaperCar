@@ -10,6 +10,7 @@ public class ApiAddressBuilder {
     private String address;
 
     public String getBrandsNamesByVehicle(int type) {
+        resetAddress();
         address = switch (type) {
             case 1 -> BASE_URL + CAR + BRAND;
             case 2 -> BASE_URL + MOTORCYCLE + BRAND;
@@ -21,13 +22,33 @@ public class ApiAddressBuilder {
     }
 
     public String getModelsNamesByVehicle(int id) {
+        if (address.contains(MODELS)) address = removeDuplicatedPatternFrom(MODELS);
+
         address += id + MODELS;
         return address;
+
     }
 
     public String getVehicleDateBy(int id) {
+        if (address.contains(YEARS)) address = removeDuplicatedPatternFrom(YEARS);
+
         address += id + YEARS;
         return address;
+    }
+
+    public String getVehicleInfoBy(String id) {
+        address += id;
+        return address;
+    }
+
+    private void resetAddress() {
+        address = "";
+    }
+
+    private String removeDuplicatedPatternFrom(String duplicateStr) {
+        int duplicateStringIndex = address.indexOf(duplicateStr);
+        int duplicateIDIndex = address.lastIndexOf("/", duplicateStringIndex - 1) + 1;
+        return address.substring(0, duplicateIDIndex);
     }
 
 }
