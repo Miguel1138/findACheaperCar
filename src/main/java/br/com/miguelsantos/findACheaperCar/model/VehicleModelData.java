@@ -7,6 +7,6 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record VehicleModelData(
-       @JsonAlias("modelos") List<VehicleBrandData> models
+       @JsonAlias("modelos") List<VehicleBaseData> models
 ) {
 }
