@@ -6,7 +6,7 @@ public class ApiAddressBuilder {
     private final String BASE_URL = "https://parallelum.com.br/fipe/api/v1/";
     private final String BRAND = "/marcas/";
     private final String MODELS = "/modelos/";
-    private final String YEARS = "/anos";
+    private final String YEARS = "/anos/";
     private String address;
 
     public String getBrandsNamesByVehicle(int type) {
@@ -37,8 +37,8 @@ public class ApiAddressBuilder {
     }
 
     public String getVehicleInfoBy(String id) {
-        address += id;
-        return address;
+        String cleanAddress = address.replaceAll("/anos/.*$", "/anos/" + id);
+        return cleanAddress;
     }
 
     private void resetAddress() {

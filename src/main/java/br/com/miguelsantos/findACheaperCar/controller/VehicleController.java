@@ -1,6 +1,6 @@
 package br.com.miguelsantos.findACheaperCar.controller;
 
-import br.com.miguelsantos.findACheaperCar.model.VehicleBrandData;
+import br.com.miguelsantos.findACheaperCar.model.VehicleBaseData;
 import br.com.miguelsantos.findACheaperCar.model.VehicleModelData;
 import br.com.miguelsantos.findACheaperCar.service.ApiConsumer;
 import br.com.miguelsantos.findACheaperCar.utils.ApiAddressBuilder;
@@ -13,8 +13,8 @@ public class VehicleController {
     private final ApiAddressBuilder addressBuilder = new ApiAddressBuilder();
 
     public String getVehicleBrandAddress(int type) {
-        if(!isInteger(type)) return ErrorMessages.DEFAULT_MESSAGE;
-        
+        if (!isInteger(type)) return ErrorMessages.DEFAULT_MESSAGE;
+
         String response = apiConsumer.obtainData(addressBuilder.getBrandsNamesByVehicle(type));
 
         return response.contains(ErrorMessages.BAD_RESPONSE)
@@ -40,10 +40,8 @@ public class VehicleController {
                 : response;
     }
 
-    public String getVehicleInfoBy(String id) {
-        return !id.isEmpty() || !id.isBlank() ?
-                apiConsumer.obtainData(addressBuilder.getVehicleInfoBy(id)) :
-                ErrorMessages.DEFAULT_MESSAGE;
+    public String getPerYearVehicleInfoBy(String id) {
+        return apiConsumer.obtainData(addressBuilder.getVehicleInfoBy(id));
     }
 
     private boolean isInteger(Object obj) {
@@ -62,10 +60,11 @@ public class VehicleController {
             throw new NullPointerException(ErrorMessages.EMPTY_LIST);
         }
 
-        List<VehicleBrandData> filteredModels = modelData.models().stream()
-                .filter(vehicleBrandData -> vehicleBrandData.name().toLowerCase().startsWith(brand))
+        List<VehicleBaseData> filteredModels = modelData.models().stream()
+                .filter(vehicleBrandData -> vehicleBrandData.name().toLowerCase().startsWith(brand.toLowerCase()))
                 .toList();
 
         return new VehicleModelData(filteredModels);
     }
+
 }
